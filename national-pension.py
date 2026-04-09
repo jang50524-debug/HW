@@ -75,7 +75,8 @@ class PensionData():
 
 @ st.cache_data
 def read_pensiondata():
-    data = PensionData('./data/national-pension.csv')
+    url = 'https://drive.google.com/file/d/1Ocfx6lqg0jITSYr_oLmxyMJX2gFWMNiC/view?usp=drive_link'
+    self.df = pd.read_csv(url, encoding='cp949')
     return data
 
 data = read_pensiondata()
