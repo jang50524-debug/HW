@@ -6,22 +6,29 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import re
 import streamlit as st
-import gdown
 
 # 한글 폰트 설정
 # plt.rcParams['font.family'] = "AppleGothic"
 # Windows, 리눅스 사용자
-plt.rcParams['font.family'] = "NanumGothic"
+plt.rcParams['font.family'] = "Malgun Gothic"
 plt.rcParams['axes.unicode_minus'] = False
 
 class PensionData():
-    def __init__(self, filepath):
-        self.df = pd.read_csv(os.path.join(filepath), encoding='cp949')
+    # 수정 전
+    # def __init__(self, filepath):
+    #     self.df = pd.read_csv(os.path.join(filepath), encoding='cp949')
+    #     self.pattern1 = '(\([^)]+\))'
+    #     self.pattern2 = '(\[[^)]+\])'
+    #     self.pattern3 = '[^A-Za-z0-9가-힣]'
+    #     self.preprocess()
+    # 수정 후
+    def __init__(self, uploaded_file):  # ← filepath → uploaded_file
+        self.df = pd.read_csv(uploaded_file, encoding='cp949')  # ← os.path.join 제거
         self.pattern1 = '(\([^)]+\))'
         self.pattern2 = '(\[[^)]+\])'
         self.pattern3 = '[^A-Za-z0-9가-힣]'
         self.preprocess()
-          
+
     def preprocess(self):
         self.df.columns = [
             '자료생성년월', '사업장명', '사업자등록번호', '가입상태', '우편번호',
@@ -72,13 +79,18 @@ class PensionData():
     def get_data(self):
         return self.df
 
-@ st.cache_data
-def read_pensiondata():
-    url = 'https://drive.google.com/file/d/1Ocfx6lqg0jITSYr_oLmxyMJX2gFWMNiC/view?usp=drive_link'
-    self.df = pd.read_csv(url, encoding='cp949')
-    return data
+# 수정 전
+# @ st.cache_data
+# def read_pensiondata():
+#     data = PensionData('./data/national-pension.csv')
+#     return data
+# data = read_pensiondata()
+# 수정 후
+uploaded_file = st.file_uploader('CSV 파일을 업로드해 주세요', type='csv')
+data = None
+if uploaded_file is not None:
+    data = PensionData(uploaded_file)
 
-data = read_pensiondata()
 company_name = st.text_input('회사명을 입력해 주세요', placeholder='검색할 회사명 입력')
 
 if data and company_name:
